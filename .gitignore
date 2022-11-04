@@ -120,3 +120,5 @@ dmypy.json
 # Visual Studio & Visual Studio Code files
 .vs
 .vscode
+
+/test_data
