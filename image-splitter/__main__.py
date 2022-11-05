@@ -44,7 +44,7 @@ def full_paths(folder):
 
 
 if len(args.input_paths) != len(args.output_paths):
-    print("Error: Unequel number of input and output paths.")
+    print("Error: Unequal number of input and output paths.")
     quit()
 
 for i, folder in enumerate(args.input_paths):
