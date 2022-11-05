@@ -1,5 +1,5 @@
 # image-splitter
-Splits images into constituent channels
+Splits image RGBA channels into separate pngs.
 
 ## Usage
 Run the program as a module with `python -m image-splitter --input_paths <paths separated by spaces> --output_paths <paths separated by spaces>` from the project root folder.
