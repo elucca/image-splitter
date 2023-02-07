@@ -1,10 +1,16 @@
 from PIL import Image
+from PIL.ImageChops import invert
 from PIL import UnidentifiedImageError
 import argparse
 import os
 
 parser = argparse.ArgumentParser(
-    description="Split images in given folders into constituent channels."
+    description="Current features: Split images in given folders into constituent channels. Invert image green channels."
+)
+parser.add_argument(
+    "--mode",
+    help="Use 's' for split and 'g' for inverting green channels.",
+    required=True,
 )
 parser.add_argument(
     "--input_paths",
@@ -20,6 +26,9 @@ parser.add_argument(
 )
 
 args = parser.parse_args()
+
+if args.mode != "s" and args.mode != "g":
+    raise argparse.ArgumentError(None, 'Error: Mode must be "s" or "g".')
 
 
 def split_image(image, output_path):
@@ -39,6 +48,26 @@ def split_image(image, output_path):
         channel[1].save(save_path, "png")
 
 
+def invert_green(image, output_path):
+    orig_name = os.path.splitext(os.path.split(image.filename)[1])[0]
+
+    if image.mode == "RGB":
+        r, g, b = image.split()
+        inv_g_image = Image.merge("RGB", (r, invert(g), b))
+
+        name = orig_name + "_invg.png"
+        save_path = os.path.join(output_path, name)
+        inv_g_image.save(save_path, "png")
+
+    if image.mode == "RGBA":
+        r, g, b, a = image.split()
+        inv_g_image = Image.merge("RGBA", (r, invert(g), b, a))
+
+        name = orig_name + "_invg.png"
+        save_path = os.path.join(output_path, name)
+        inv_g_image.save(save_path, "png")
+
+
 def full_paths(folder):
     return [os.path.join(folder, file) for file in os.listdir(folder)]
 
@@ -55,6 +84,9 @@ for i, folder in enumerate(args.input_paths):
 
         try:
             image = Image.open(file_path)
-            split_image(image, args.output_paths[i])
+            if args.mode == "s":
+                split_image(image, args.output_paths[i])
+            if args.mode == "g":
+                invert_green(image, args.output_paths[i])
         except UnidentifiedImageError:
             print("Passing over unrecognized file...")
